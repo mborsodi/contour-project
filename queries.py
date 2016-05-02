@@ -24,6 +24,7 @@ def getContour(size, notes):
         if len(contour) < size and notes[i] != contour[len(contour)-1]:
             contour.append(notes[i])
 
+    print(contour)
     contour = list(map(music21.note.Note, contour))
     
     return contour
@@ -182,19 +183,27 @@ def pieces():
     return toReturn
 
 
-composers = composers()
-beethoven = composers[0]
-mozart = composers[1]
-
-print('beethoven:', len(beethoven['files']))
-print('mozart:', len(mozart['files']))
-
-for piece in pieces():
-    print(piece['name'])
-    print(len(piece['files']))
+composers = ['songs/foster', 'songs/gershwin', 'songs/schubert']
     
+# all contours of all the themes
+# for composer in composers:
+#     for piece in os.listdir(composer):
+#         notes = getNotes(composer + '/' + piece)
+#         print(notes)
+#         print(notes.values)
 
+notes = getNotes(composers[0] + '/fostr01.mid')
+print(notes)
+notes = notes['0'].tolist()
+print(notes)
 
+# average contour similarity within piece
+# average contour similarity within composer
+# sample contours inside and outside pieces
+
+# figure out how to compute an average contour
+# divide pieces up by instrument/style?
+# divide themes by which one in variation they are
 
 
 
