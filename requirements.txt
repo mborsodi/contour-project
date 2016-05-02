@@ -1,0 +1,3 @@
+vis-framework
+matplotlib
+scipy
