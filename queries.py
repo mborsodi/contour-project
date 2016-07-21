@@ -9,6 +9,8 @@ def getNotes(piece):
 
     score = music21.converter.parse(piece)
     notes = noterest.NoteRestIndexer(score).run()
+    for note in notes.columns:
+        notes = notes[note].tolist()
     return notes
 
 def getContour(size, notes):
@@ -24,7 +26,6 @@ def getContour(size, notes):
         if len(contour) < size and notes[i] != contour[len(contour)-1]:
             contour.append(notes[i])
 
-    print(contour)
     contour = list(map(music21.note.Note, contour))
     
     return contour
@@ -183,19 +184,132 @@ def pieces():
     return toReturn
 
 
-composers = ['songs/foster', 'songs/gershwin', 'songs/schubert']
-    
-# all contours of all the themes
-# for composer in composers:
-#     for piece in os.listdir(composer):
-#         notes = getNotes(composer + '/' + piece)
-#         print(notes)
-#         print(notes.values)
+def smoothness(contour):
 
-notes = getNotes(composers[0] + '/fostr01.mid')
-print(notes)
-notes = notes['0'].tolist()
-print(notes)
+    plus = []
+    for x in range(len(contour)-1):
+        if contour[x] == contour[x+1]:
+            plus.append('=')
+        elif contour[x] < contour[x+1]:
+            plus.append('+')
+        else:
+            plus.append('-')
+
+    count = 0
+    for x in range(len(plus)-1):
+        if plus[x] == plus[x+1]:
+            count += 1
+    
+    if len(plus) == 0:
+        return 0
+    else:
+        return count/len(plus)
+
+
+
+
+
+composers = ['songs/gershwin', 'songs/foster', 'songs/schubert']
+    
+
+
+
+
+contours = []
+
+piece_red = []
+piece_conts = []
+
+
+pieces = []
+
+# all contours of all the themes'
+for composer in composers:
+    print(composer)
+    for piece in os.listdir(composer):
+        print(piece)
+        notes = getNotes(composer + '/' + piece)
+
+        thing = []
+        for note in notes:
+            if note is not 'Rest':
+                thing.append(note)
+            else:
+                piece_conts.append(thing)
+                thing = []
+
+        smooths = 0
+        for cont in piece_conts:
+            # reduced = reduce_c(cont, 10)
+            # red = getContour(len(reduced), reduced)
+            cont = cont_num(getContour(len(cont), cont))
+            smooth = smoothness(cont)
+            smooths += smooth
+
+        print(smooths/len(piece_conts))
+
+
+
+
+
+
+
+
+
+
+# all_conts = {}
+
+# for cont in piece_red:
+#     if str(cont) in all_conts:
+#         all_conts[str(cont)] += 1
+#     else:
+#         all_conts[str(cont)] = 1
+
+# print(all_conts)
+        
+
+
+#     cont = getContour(5, notes)
+#     contour = cont_num(cont)
+#     contours.append(contour)
+
+# contour2 = []
+# for piece in os.listdir(composer2):
+
+#     notes = getNotes(composer2 + '/' + piece)
+
+#     cont = getContour(5, notes)
+#     contour = cont_num(cont)
+#     contour2.append(contour)
+
+# coms = list(map(COM_matrix, contours))
+# coms2 = list(map(COM_matrix, contour2))
+
+# totes = []
+# total = 0
+
+
+# for cont in coms:
+#     for cont2 in coms2:
+#         this = compare(cont, cont2)
+#         totes.append(this)
+#         total += this
+
+# print(total/len(totes))
+# print(np.std(totes))
+
+# all_conts = {}
+
+# for cont in totes:
+#     if cont in all_conts:
+#         all_conts[cont] += 1
+#     else:
+#         all_conts[cont] = 1
+
+# print(all_conts)
+
+
+
 
 # average contour similarity within piece
 # average contour similarity within composer
